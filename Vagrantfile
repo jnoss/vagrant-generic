@@ -16,6 +16,7 @@ Vagrant.configure('2') do |config|
   # Harvard, is reserved by the Law School. Instead, use a private IP space
   # that will never be routed (anything in the massive 172.16.0.0/12 range).
   config.vm.network :private_network, ip: '172.16.10.10'
+  config.vm.network :private_network, ip: '172.16.20.10'
 
   # Hostname can be anything you want that does not conflict with "real" DNS
   #
@@ -27,7 +28,7 @@ Vagrant.configure('2') do |config|
   # Puppet Labs CentOS 6.5 for VirtualBox
   config.vm.provider :virtualbox do |virtualbox, override|
     # Change default RAM allocation
-    virtualbox.customize ['modifyvm', :id, '--memory', '512']
+    virtualbox.customize ['modifyvm', :id, '--memory', '1500']
   end
 
   # Puppet Labs CentOS 6.4 for VMWare Fusion

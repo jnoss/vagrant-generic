@@ -6,8 +6,8 @@ openstack::region: 'openstack'
 ######## Networks
 openstack::network::api: '172.16.10.0/24'
 openstack::network::external: '172.16.10.0/24'
-openstack::network::management: '172.16.10.0/24'
-openstack::network::data: '172.16.10.0/24'
+openstack::network::management: '172.16.20.0/24'
+openstack::network::data: '172.16.20.0/24'
 
 openstack::network::external::ippool::start: 172.16.10.100
 openstack::network::external::ippool::end: 172.16.10.200
@@ -21,15 +21,15 @@ openstack::network::neutron::private: '10.0.0.0/24'
 ######## Fixed IPs (controllers)
 
 openstack::controller::address::api: %{ipaddress_eth1}
-openstack::controller::address::management: %{ipaddress_eth1}
+openstack::controller::address::management: %{ipaddress_eth2}
 openstack::storage::address::api: '172.16.10.5'
-openstack::storage::address::management: '172.16.33.5'
+openstack::storage::address::management: '172.16.20.5'
 
 ######## Database
 
 openstack::mysql::root_password: 'spam-gak'
 openstack::mysql::service_password: 'fuva-wax'
-openstack::mysql::allowed_hosts: ['localhost', '127.0.0.1', '172.16.10.%']
+openstack::mysql::allowed_hosts: ['localhost', '127.0.0.1', '172.16.20.%']
 
 ######## RabbitMQ
 
