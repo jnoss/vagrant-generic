@@ -9,6 +9,9 @@ end
 
 Vagrant.configure('2') do |config|
   # Forward standard ports (local only, does not run under AWS)
+  
+  
+  
   config.vm.network :forwarded_port, guest: 80,  host: 8080, auto_correct: true
   config.vm.network :forwarded_port, guest: 443, host: 8443, auto_correct: true
 
@@ -59,5 +62,12 @@ Vagrant.configure('2') do |config|
     puppet.manifest_file     = 'init.pp'
     puppet.hiera_config_path = 'hiera.yaml'
     puppet.options           = '--verbose --modulepath /vagrant/modules'
+  end
+  
+  config.vm.define "access" do |access|
+    access.vm.hostname =  'access.dev'
+    access.vm.box = 'puppetlabs/centos-6.5-64-puppet'
+    access.vm.network :private_network, ip: '172.16.10.9'
+    access.vm.network :private_network, ip: '172.16.20.9'  
   end
 end
