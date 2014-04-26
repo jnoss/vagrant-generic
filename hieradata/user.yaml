@@ -102,6 +102,7 @@ openstack::heat::encryption_key: 'heatsecretkey'
 ######## Horizon
 
 openstack::horizon::secret_key: 'whu-ghuk'
+openstack::horizon::swift: true
 
 ######## Tempest
 
