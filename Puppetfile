@@ -6,7 +6,7 @@ mod 'harvard',
 ## The core OpenStack modules
 
 mod 'havana',
-  :git => 'git://github.com/puppetlabs/puppetlabs-openstack',
+  :git => 'git://github.com/jnoss/puppetlabs-openstack',
   :ref => 'stable/havana'
 
 mod "keystone",
