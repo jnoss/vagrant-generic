@@ -72,6 +72,6 @@ Vagrant.configure('2') do |config|
     access.vm.network :private_network, ip: '172.16.10.9'
     access.vm.network :private_network, ip: '172.16.20.9'  
     # Forward standard ports (local only, does not run under AWS)
-    controller.vm.network :forwarded_port, guest: 22,  host: 2200, auto_correct: true
+    access.vm.network :forwarded_port, guest: 22,  host: 2200, auto_correct: true
   end
 end
