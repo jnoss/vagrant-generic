@@ -48,7 +48,7 @@ Vagrant.configure('2') do |config|
   config.vm.define "controller" do |controller|
 
     # Forward standard ports (local only, does not run under AWS)
-    controller.vm.network :forwarded_port, guest: 22,  host: 2222, auto_correct: true
+#    controller.vm.network :forwarded_port, guest: 22,  host: 2222, auto_correct: true
     controller.vm.network :forwarded_port, guest: 80,  host: 8080, auto_correct: true
     controller.vm.network :forwarded_port, guest: 443, host: 8443, auto_correct: true
 
