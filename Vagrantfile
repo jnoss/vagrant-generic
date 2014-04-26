@@ -9,12 +9,6 @@ end
 
 Vagrant.configure('2') do |config|
 
-  # Puppet Labs CentOS 6.5 for VirtualBox
-  config.vm.provider :virtualbox do |virtualbox, override|
-    # Change default RAM allocation
-    virtualbox.customize ['modifyvm', :id, '--memory', '1500']
-  end
-
   # Puppet Labs CentOS 6.4 for VMWare Fusion
   config.vm.provider :vmware_fusion do |fusion, override|
   end
@@ -46,12 +40,17 @@ Vagrant.configure('2') do |config|
   end
 
   config.vm.define "controller" do |controller|
-
+    # Puppet Labs CentOS 6.5 for VirtualBox
+    controller.vm.provider :virtualbox do |virtualbox, override|
+      # Change default RAM allocation
+      virtualbox.customize ['modifyvm', :id, '--memory', '1500']
+    end
     # Forward standard ports (local only, does not run under AWS)
 #    controller.vm.network :forwarded_port, guest: 22,  host: 2222, auto_correct: true
     controller.vm.network :forwarded_port, guest: 80,  host: 8080, auto_correct: true
     controller.vm.network :forwarded_port, guest: 443, host: 8443, auto_correct: true
-
+    controller.vm.network :forwarded_port, guest: 8080,  host: 8880, auto_correct: true
+    
     # By default Vagrant uses a host-only network on a private IP space that, at
     # Harvard, is reserved by the Law School. Instead, use a private IP space
     # that will never be routed (anything in the massive 172.16.0.0/12 range).
@@ -66,12 +65,33 @@ Vagrant.configure('2') do |config|
     controller.vm.box = 'puppetlabs/centos-6.5-64-puppet'
   end
   
-  config.vm.define "access" do |access|
-    access.vm.hostname =  'access.dev'
-    access.vm.box = 'puppetlabs/centos-6.5-64-puppet'
-    access.vm.network :private_network, ip: '172.16.10.9'
-    access.vm.network :private_network, ip: '172.16.20.9'  
+  config.vm.define "outside_access" do |outside_access|
+    # Puppet Labs CentOS 6.5 for VirtualBox
+    outside_access.vm.provider :virtualbox do |virtualbox, override|
+      # Change default RAM allocation
+      virtualbox.customize ['modifyvm', :id, '--memory', '512']
+    end
+    outside_access.vm.hostname =  'outside_access.dev'
+    outside_access.vm.box = 'puppetlabs/centos-6.5-64-puppet'
+
+    outside_access.vm.network :private_network, ip: '172.16.10.9'  
     # Forward standard ports (local only, does not run under AWS)
-    access.vm.network :forwarded_port, guest: 22,  host: 2200, auto_correct: true
+    outside_access.vm.network :forwarded_port, guest: 22,  host: 2210, auto_correct: true
   end
+  
+  config.vm.define "inside_access" do |inside_access|
+    # Puppet Labs CentOS 6.5 for VirtualBox
+    inside_access.vm.provider :virtualbox do |virtualbox, override|
+      # Change default RAM allocation
+      virtualbox.customize ['modifyvm', :id, '--memory', '512']
+    end
+    inside_access.vm.hostname =  'inside_access.dev'
+    inside_access.vm.box = 'puppetlabs/centos-6.5-64-puppet'
+
+    inside_access.vm.network :private_network, ip: '172.16.20.9'  
+    # Forward standard ports (local only, does not run under AWS)
+    inside_access.vm.network :forwarded_port, guest: 22,  host: 2220, auto_correct: true
+  end
+  
+  
 end
