@@ -8,25 +8,6 @@ if Gem::Version.new(Vagrant::VERSION) < Gem::Version.new('1.5.0')
 end
 
 Vagrant.configure('2') do |config|
-  # Forward standard ports (local only, does not run under AWS)
-  
-  
-  
-  config.vm.network :forwarded_port, guest: 80,  host: 8080, auto_correct: true
-  config.vm.network :forwarded_port, guest: 443, host: 8443, auto_correct: true
-
-  # By default Vagrant uses a host-only network on a private IP space that, at
-  # Harvard, is reserved by the Law School. Instead, use a private IP space
-  # that will never be routed (anything in the massive 172.16.0.0/12 range).
-  config.vm.network :private_network, ip: '172.16.10.10'
-  config.vm.network :private_network, ip: '172.16.20.10'
-
-  # Hostname can be anything you want that does not conflict with "real" DNS
-  #
-  # If you install the hostsupdater plugin, you can access the VM via its
-  # DNS name. To install it run: `vagrant plugin install vagrant-hostsupdater`
-  config.vm.hostname = 'vagrant.dev'
-  config.vm.box = 'puppetlabs/centos-6.5-64-puppet'
 
   # Puppet Labs CentOS 6.5 for VirtualBox
   config.vm.provider :virtualbox do |virtualbox, override|
@@ -62,6 +43,26 @@ Vagrant.configure('2') do |config|
     puppet.manifest_file     = 'init.pp'
     puppet.hiera_config_path = 'hiera.yaml'
     puppet.options           = '--verbose --modulepath /vagrant/modules'
+  end
+
+  config.vm.define "controller" do |controller|
+
+    # Forward standard ports (local only, does not run under AWS)
+    controller.vm.network :forwarded_port, guest: 80,  host: 8080, auto_correct: true
+    controller.vm.network :forwarded_port, guest: 443, host: 8443, auto_correct: true
+
+    # By default Vagrant uses a host-only network on a private IP space that, at
+    # Harvard, is reserved by the Law School. Instead, use a private IP space
+    # that will never be routed (anything in the massive 172.16.0.0/12 range).
+    controller.vm.network :private_network, ip: '172.16.10.10'
+    controller.vm.network :private_network, ip: '172.16.20.10'
+
+    # Hostname can be anything you want that does not conflict with "real" DNS
+    #
+    # If you install the hostsupdater plugin, you can access the VM via its
+    # DNS name. To install it run: `vagrant plugin install vagrant-hostsupdater`
+    controller.vm.hostname = 'vagrant.dev'
+    controller.vm.box = 'puppetlabs/centos-6.5-64-puppet'
   end
   
   config.vm.define "access" do |access|
