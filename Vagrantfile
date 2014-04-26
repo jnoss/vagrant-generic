@@ -50,7 +50,8 @@ Vagrant.configure('2') do |config|
     controller.vm.network :forwarded_port, guest: 80,  host: 8080, auto_correct: true
     controller.vm.network :forwarded_port, guest: 443, host: 8443, auto_correct: true
     controller.vm.network :forwarded_port, guest: 8080,  host: 8880, auto_correct: true
-    
+    controller.vm.network :forwarded_port, guest: 8000,  host: 8888, auto_correct: true
+        
     # By default Vagrant uses a host-only network on a private IP space that, at
     # Harvard, is reserved by the Law School. Instead, use a private IP space
     # that will never be routed (anything in the massive 172.16.0.0/12 range).
