@@ -48,6 +48,7 @@ Vagrant.configure('2') do |config|
   config.vm.define "controller" do |controller|
 
     # Forward standard ports (local only, does not run under AWS)
+    controller.vm.network :forwarded_port, guest: 22,  host: 2222, auto_correct: true
     controller.vm.network :forwarded_port, guest: 80,  host: 8080, auto_correct: true
     controller.vm.network :forwarded_port, guest: 443, host: 8443, auto_correct: true
 
@@ -61,7 +62,7 @@ Vagrant.configure('2') do |config|
     #
     # If you install the hostsupdater plugin, you can access the VM via its
     # DNS name. To install it run: `vagrant plugin install vagrant-hostsupdater`
-    controller.vm.hostname = 'vagrant.dev'
+    controller.vm.hostname = 'controller.dev'
     controller.vm.box = 'puppetlabs/centos-6.5-64-puppet'
   end
   
@@ -70,5 +71,7 @@ Vagrant.configure('2') do |config|
     access.vm.box = 'puppetlabs/centos-6.5-64-puppet'
     access.vm.network :private_network, ip: '172.16.10.9'
     access.vm.network :private_network, ip: '172.16.20.9'  
+    # Forward standard ports (local only, does not run under AWS)
+    controller.vm.network :forwarded_port, guest: 22,  host: 2200, auto_correct: true
   end
 end
