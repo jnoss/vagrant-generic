@@ -2,9 +2,6 @@
 :backends:
   - yaml
 :yaml:
-  :datadir:
-    '/vagrant/hieradata'
+  :datadir: /etc/puppet/hieradata
 :hierarchy:
-  - user
-  - defaults
-:logger: console
+  - common

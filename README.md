@@ -1,66 +1,80 @@
-vagrant-generic
-===============
+A few notes on using Vagrant and VMWare Fusion (or virtualbox) to test the Havana module:
 
-A generic Vagrant-powered development environment. This is a good basic starting point for spinning up a clean Vagrant image and running Puppet.  Check out the branches for specific implementations such as MediaWiki, OpenStack, and Splunk.
+run ./firstrun.sh -- that will bring up vms and then ssh to them in turn to setup.
 
-General notes
--------------
-Vagrant 1.4+ is required for the private networking feature to work.
+Five networks need to be setup in VMWare Fusion. The default net for
+Vagrant, and the four OpenStack networks.
 
-For the local install, we are using the [Puppet Labs](http://puppet-vagrant-boxes.puppetlabs.com/) CentOS box. For the remote install, we are using the newest Amazon Linux AMI. CentOS and Amazon Linux are reasonably similar, and are binary- and package-compatible.
+*  eth0: Share with my Mac
+*  eth1: 192.168.11.0/24 (netmask 255.255.255.0)
+*  eth2: 192.168.22.0/24 (netmask 255.255.255.0)
+*  eth3: 172.16.33.0/24 (netmask 255.255.255.0)
+*  eth4: 172.16.44.0/24 (netmask 255.255.255.0)
 
-We run [librarian-puppet](http://librarian-puppet.com/) to fetch Puppet modules and dependencies once the VM has booted.
+Getting these networks up and running with Vagrant and VMWare Fusion can
+be a bit tricky. The networks will be set up automatically by Vagrant,
+but you should take some time to set "allow promiscuous" in the VMWare
+settings. The 192.* networks should be visible to your computer, the
+172.* networks shouldn't (the difference between public and private).
 
-Local install using VirtualBox
-------------------------------
-* Install [VirtualBox](http://www.virtualbox.org/manual/ch02.html)
-* Install [Vagrant](http://www.vagrantup.com/downloads.html)
-* Clone this repository
-* From the repository base run `vagrant up`
+You will likely need to reboot your computer to get the networks to behave
+properly. Sorry about that.
 
-Local install using VMWare Fusion or Workstation
-------------------------------------------------
-* Install VMWare Fusion or VMWare Workstation
-* Install [Vagrant for VMWare](http://www.vagrantup.com/vmware)
-* Clone this repository
-* From the repository base run `vagrant up --provider vmware_fusion` **or** `vagrant up --provider vmware_workstation`
+The IP address reservation is
 
-Remote install using AWS
-------------------------
-* Install [Vagrant](http://www.vagrantup.com/downloads.html)
-* Install the Vagrant AWS plugin:
+* 0.0.0.1  : Host OS
+* 0.0.0.2  : VMWare Router
+* 0.0.0.3  : Puppet Master
+* 0.0.0.4  : OS Controller
+* 0.0.0.8  : Swift Storage Zone 1
+* 0.0.0.9  : Swift Storage Zone 2
+* 0.0.0.10 : Swift Storage Zone 3
+* 0.0.0.11 : Tempest
+
+Vagrant needs the hostfile plugin installed:
+
 ```
-    vagrant plugin install vagrant-aws
-```
-* From the AWS Console or using command line tools, create a new EC2 security group called "vagrant" with, at minimum, SSH (port 22) access.
-* If you do not already have one, create a new SSH keypair in EC2.
-* Import our AWS Vagrant box (this is a skeleton Vagrant box that points to the proper Amazon Linux AMI):
-```
-    vagrant box add amazon-linux-2013.09 https://raw.github.com/huit/huit-vagrant-boxes/master/aws/amazon-linux-2013.09.box
-```
-* Create a Vagrant configuration file in your home directory `~/.vagrant.d/Vagrantfile` and use the below template. You must specify your AWS credentials and SSH key location, as well as your AWS region.
-```ruby
-    Vagrant.configure('2') do |config|
-      config.vm.provider :aws do |aws, override|
-        aws.access_key_id     = 'YOUR_AWS_ACCESS_KEY'
-        aws.secret_access_key = 'YOUR_AWS_SECRET_KEY'
-        aws.keypair_name      = 'YOUR_AWS_KEYPAIR'
-        aws.region            = 'us-east-1'
+vagrant plugin install vagrant-hostfile
 
-        override.ssh.private_key_path = 'PATH_TO_YOUR_PRIVATE_KEY'
-      end
-    end
-```
-  For more options see: https://github.com/mitchellh/vagrant-aws
-* Run: `vagrant up --provider=aws`
+or, 
 
-Extra credit
-------------
-Install the `vagrant-hostsupdater` plugin to keep your local `/etc/hosts` file in sync with your VM's IP address and allow you to access VMs by hostname.
-
-Install the `vagrant-vbguest` plugin to keep the guest tools up-to-date with new versions of VirtualBox.
-
-To speed up running `vagrant provision` pass in the environment variable `LIBRARIAN=false`, which will disable running librarian-puppet to check for and update Puppet modules. Unless you have changed the Puppetfile.lock, there is no need to run librarian additional times.
+vagrant plugin install vagrant-hostmanager
 ```
-  LIBRARIAN=false vagrant provision
+
+The Vagrantfile will automatically download a prepared CentOS box for you.
+You can bring up the entire Swift cluster with the firstrun.sh script.
+
+
+You need to have R10K installed. You can use the one provided by the rubygem.
+
 ```
+ruby gem install R10K
+
+or,
+
+ruby gem install r10K
+```
+
+Using R10K, module dependencies are automatically downloaded and the root of the module
+directory is attached to the virtual machines. This can help with module development.
+Any changes you make to the module will appear on the Puppet master. Additionally,
+using the Python script in the ../../tools directory you can apply pending patches
+from Stackforge to the dependencies, giving you an opportunity to test out changes
+before they're merged. To try it out use the command:
+
+```
+python ../../tools/review_checkout.py -u <gerrit_username> -c <review_id>
+```
+
+The <review_id> refers to the URL for OpenStack Gerrit. So, if your review was located at 
+https://review.openstack.org/#/c/81989/ the `<review_id>` would be 81989.
+
+Running the script will produce output that is itself a script. You can apply the patch by
+piping it to a shell.
+
+```
+python ../../tools/review_checkout.py -u <gerrit_username> -c <review_id> | sh
+```
+
+You can log into your console through the API network and the
+[Horizon interface](http://192.168.11.4).

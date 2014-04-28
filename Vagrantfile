@@ -1,97 +1,100 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# Load AWS functionality if the plugin is installed. Networking options below
-# will be ignored by the AWS plugin. This is un-necessary in Vagrant >= 1.5.0
-if Gem::Version.new(Vagrant::VERSION) < Gem::Version.new('1.5.0')
-  Vagrant.require_plugin 'vagrant-aws' if defined? VagrantPlugins::AWS
-end
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
 
-Vagrant.configure('2') do |config|
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = "puppetlabs/centos-6.5-64-puppet"
 
-  # Puppet Labs CentOS 6.4 for VMWare Fusion
-  config.vm.provider :vmware_fusion do |fusion, override|
+  config.hostmanager.enabled = true
+  config.hostmanager.manage_host = false
+  config.hostmanager.ignore_private_ip = false
+  config.hostmanager.include_offline = true
+
+  config.vm.provider :virtualbox do |vb|
+    # Don't boot with headless mode
+    vb.gui = true
   end
 
-  # Amazon Linux AMI
-  config.vm.provider :aws do |aws, override|
-    override.vm.box       = 'amazon-linux-2013.09'
-    override.vm.box_url   = 'https://raw.github.com/huit/huit-vagrant-boxes/master/aws/amazon-linux-2013.09.box'
+  config.vm.define "puppet" do |puppet|
+    puppet.vm.network :private_network, ip: "192.168.11.3"
+    puppet.vm.network :private_network, ip: "192.168.22.3"
+    puppet.vm.network :private_network, ip: "172.16.33.3"
+    puppet.vm.network :private_network, ip: "172.16.44.3"
 
-    aws.instance_type     = 't1.micro'
+    puppet.vm.hostname = "puppet"
 
-    # It is good practice to tag instances with identifying information
-    aws.tags = {
-      'Name'        => config.vm.hostname,
-      'Owner'       => ENV['USER'],
-      'Provisioner' => 'vagrant-aws'
-    }
-  end
+    puppet.vm.synced_folder "modules/openstack", "/openstack"
 
-  # Install librarian-puppet and use it to download Puppet modules
-  config.vm.provision :shell, :path => 'bootstrap.sh' unless ENV['LIBRARIAN'] == 'false'
-
-  # Puppet provisioner for primary configuration
-  config.vm.provision :puppet do |puppet|
-    puppet.manifests_path    = 'manifests'
-    puppet.manifest_file     = 'init.pp'
-    puppet.hiera_config_path = 'hiera.yaml'
-    puppet.options           = '--verbose --modulepath /vagrant/modules'
-  end
-
-  config.vm.define "controller" do |controller|
-    # Puppet Labs CentOS 6.5 for VirtualBox
-    controller.vm.provider :virtualbox do |virtualbox, override|
-      # Change default RAM allocation
-      virtualbox.customize ['modifyvm', :id, '--memory', '1500']
+    puppet.vm.provider :virtualbox do |virtualbox, override|
+      virtualbox.customize ['modifyvm', :id, '--memory', '1024']
     end
-    # Forward standard ports (local only, does not run under AWS)
-#    controller.vm.network :forwarded_port, guest: 22,  host: 2222, auto_correct: true
-    controller.vm.network :forwarded_port, guest: 80,  host: 8080, auto_correct: true
-    controller.vm.network :forwarded_port, guest: 443, host: 8443, auto_correct: true
-    controller.vm.network :forwarded_port, guest: 8080,  host: 8880, auto_correct: true
+  end
+
+  config.vm.define "control" do |control|
+    control.vm.network :private_network, ip: "192.168.11.4"
+    control.vm.network :private_network, ip: "192.168.22.4"
+    control.vm.network :private_network, ip: "172.16.33.4"
+    control.vm.network :private_network, ip: "172.16.44.4"
     
-    # By default Vagrant uses a host-only network on a private IP space that, at
-    # Harvard, is reserved by the Law School. Instead, use a private IP space
-    # that will never be routed (anything in the massive 172.16.0.0/12 range).
-    controller.vm.network :private_network, ip: '172.16.10.10'
-    controller.vm.network :private_network, ip: '172.16.20.10'
+    control.vm.network :forwarded_port, guest: 80,  host: 8000, auto_correct: true
+    control.vm.network :forwarded_port, guest: 443, host: 8443, auto_correct: true
+    control.vm.network :forwarded_port, guest: 8080,  host: 8080, auto_correct: true
+    control.vm.network :forwarded_port, guest: 5000,  host: 8050, auto_correct: true
+    
+    control.vm.hostname = "control"
 
-    # Hostname can be anything you want that does not conflict with "real" DNS
-    #
-    # If you install the hostsupdater plugin, you can access the VM via its
-    # DNS name. To install it run: `vagrant plugin install vagrant-hostsupdater`
-    controller.vm.hostname = 'controller.dev'
-    controller.vm.box = 'puppetlabs/centos-6.5-64-puppet'
-  end
-  
-  config.vm.define "outsideaccess" do |outsideaccess|
-    # Puppet Labs CentOS 6.5 for VirtualBox
-    outsideaccess.vm.provider :virtualbox do |virtualbox, override|
-      # Change default RAM allocation
-      virtualbox.customize ['modifyvm', :id, '--memory', '512']
+    control.vm.synced_folder "modules/openstack", "/openstack"
+
+    control.vm.provider  :virtualbox do |virtualbox, override|
+      virtualbox.customize ['modifyvm', :id, '--memory', '1024']
     end
-    outsideaccess.vm.hostname =  'outsideaccess.dev'
-    outsideaccess.vm.box = 'puppetlabs/centos-6.5-64-puppet'
-
-    outsideaccess.vm.network :private_network, ip: '172.16.10.9'  
-    # Forward standard ports (local only, does not run under AWS)
-    outsideaccess.vm.network :forwarded_port, guest: 22,  host: 2210, auto_correct: true
   end
-  
-  config.vm.define "insideaccess" do |insideaccess|
-    # Puppet Labs CentOS 6.5 for VirtualBox
-    insideaccess.vm.provider :virtualbox do |virtualbox, override|
-      # Change default RAM allocation
-      virtualbox.customize ['modifyvm', :id, '--memory', '512']
+
+  config.vm.define "swiftstore1" do |swiftstore1|
+    swiftstore1.vm.network :private_network, ip: "192.168.11.8"
+    swiftstore1.vm.network :private_network, ip: "192.168.22.8"
+    swiftstore1.vm.network :private_network, ip: "172.16.33.8"
+    swiftstore1.vm.network :private_network, ip: "172.16.44.8"
+
+    swiftstore1.vm.hostname = "swiftstore1"
+
+    swiftstore1.vm.synced_folder "modules/openstack", "/openstack"
+
+    swiftstore1.vm.provider  :virtualbox do |virtualbox, override|
+      virtualbox.customize ['modifyvm', :id, '--memory', '1024']
     end
-    insideaccess.vm.hostname =  'insideaccess.dev'
-    insideaccess.vm.box = 'puppetlabs/centos-6.5-64-puppet'
-
-    insideaccess.vm.network :private_network, ip: '172.16.20.9'  
-    # Forward standard ports (local only, does not run under AWS)
-    insideaccess.vm.network :forwarded_port, guest: 22,  host: 2220, auto_correct: true
   end
-  
-  
+
+  config.vm.define "swiftstore2" do |swiftstore2|
+    swiftstore2.vm.network :private_network, ip: "192.168.11.9"
+    swiftstore2.vm.network :private_network, ip: "192.168.22.9"
+    swiftstore2.vm.network :private_network, ip: "172.16.33.9"
+    swiftstore2.vm.network :private_network, ip: "172.16.44.9"
+
+    swiftstore2.vm.hostname = "swiftstore2"
+
+    swiftstore2.vm.synced_folder "modules/openstack", "/openstack"
+
+    swiftstore2.vm.provider  :virtualbox do |virtualbox, override|
+      virtualbox.customize ['modifyvm', :id, '--memory', '1024']
+    end
+  end
+
+  config.vm.define "swiftstore3" do |swiftstore3|
+    swiftstore3.vm.network :private_network, ip: "192.168.11.10"
+    swiftstore3.vm.network :private_network, ip: "192.168.22.10"
+    swiftstore3.vm.network :private_network, ip: "172.16.33.10"
+    swiftstore3.vm.network :private_network, ip: "172.16.44.10"
+
+    swiftstore3.vm.hostname = "swiftstore3"
+
+    swiftstore3.vm.synced_folder "modules/openstack", "/openstack"
+
+    swiftstore3.vm.provider  :virtualbox do |virtualbox, override|
+      virtualbox.customize ['modifyvm', :id, '--memory', '1024']
+    end
+  end
+
 end
