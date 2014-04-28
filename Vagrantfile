@@ -23,7 +23,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     puppet.vm.network :private_network, ip: "172.16.33.3"
     puppet.vm.network :private_network, ip: "172.16.44.3"
 
-    puppet.vm.hostname = "puppet"
+    puppet.vm.hostname = "puppet.dev"
 
     puppet.vm.provider :virtualbox do |virtualbox, override|
       virtualbox.customize ['modifyvm', :id, '--memory', '1024']
@@ -41,7 +41,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     control.vm.network :forwarded_port, guest: 8080,  host: 8080, auto_correct: true
     control.vm.network :forwarded_port, guest: 5000,  host: 8050, auto_correct: true
     
-    control.vm.hostname = "control"
+    control.vm.hostname = "control.dev"
 
     control.vm.provider  :virtualbox do |virtualbox, override|
       virtualbox.customize ['modifyvm', :id, '--memory', '1024']
@@ -54,7 +54,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     swiftstore1.vm.network :private_network, ip: "172.16.33.8"
     swiftstore1.vm.network :private_network, ip: "172.16.44.8"
 
-    swiftstore1.vm.hostname = "swiftstore1"
+    swiftstore1.vm.hostname = "swiftstore1.dev"
 
     swiftstore1.vm.provider  :virtualbox do |virtualbox, override|
       virtualbox.customize ['modifyvm', :id, '--memory', '1024']
@@ -67,7 +67,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     swiftstore2.vm.network :private_network, ip: "172.16.33.9"
     swiftstore2.vm.network :private_network, ip: "172.16.44.9"
 
-    swiftstore2.vm.hostname = "swiftstore2"
+    swiftstore2.vm.hostname = "swiftstore2.dev"
 
     swiftstore2.vm.provider  :virtualbox do |virtualbox, override|
       virtualbox.customize ['modifyvm', :id, '--memory', '1024']
@@ -80,7 +80,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     swiftstore3.vm.network :private_network, ip: "172.16.33.10"
     swiftstore3.vm.network :private_network, ip: "172.16.44.10"
 
-    swiftstore3.vm.hostname = "swiftstore3"
+    swiftstore3.vm.hostname = "swiftstore3.dev"
 
     swiftstore3.vm.provider  :virtualbox do |virtualbox, override|
       virtualbox.customize ['modifyvm', :id, '--memory', '1024']
