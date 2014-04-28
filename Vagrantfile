@@ -93,7 +93,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     access.vm.network :private_network, ip: "172.16.33.30"
     access.vm.network :private_network, ip: "172.16.44.30"
 
-    access.vm.hostname = "swiftstore3.dev"
+    access.vm.hostname = "access.dev"
 
     access.vm.provider  :virtualbox do |virtualbox, override|
       virtualbox.customize ['modifyvm', :id, '--memory', '768']
