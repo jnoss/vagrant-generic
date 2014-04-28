@@ -88,10 +88,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.define "access" do |access|
-    access.vm.network :private_network, ip: "192.168.11.10"
-    access.vm.network :private_network, ip: "192.168.22.10"
-    access.vm.network :private_network, ip: "172.16.33.10"
-    access.vm.network :private_network, ip: "172.16.44.10"
+    access.vm.network :private_network, ip: "192.168.11.30"
+    access.vm.network :private_network, ip: "192.168.22.30"
+    access.vm.network :private_network, ip: "172.16.33.30"
+    access.vm.network :private_network, ip: "172.16.44.30"
 
     access.vm.hostname = "swiftstore3.dev"
 
