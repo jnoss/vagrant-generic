@@ -4,6 +4,7 @@ node 'puppet' {
 
 node 'control' {
   include ::havana::role::swiftcontroller
+  
 }
 
 node 'storage' {

@@ -1,2 +1,2 @@
 #!/bin/bash
-vagrant hostmanager
+vagrant hostmanager --provider vmware_fusion

@@ -1,7 +1,10 @@
 #!/bin/bash
 ./05_swiftup.sh
 ./10_setup_master.sh
+./11_puppetlibrarian.sh
+./12_runpuppet_on_master.sh
 ./15_setup_swiftnodes.sh
 ./25_deploy_swiftstore.sh
 ./30_deploy_control.sh
+./35_deploy_access.sh
 ./25_deploy_swiftstore.sh

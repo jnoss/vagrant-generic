@@ -41,10 +41,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     control.vm.network :private_network, ip: "172.16.33.4"
     control.vm.network :private_network, ip: "172.16.44.4"
     
-    control.vm.network :forwarded_port, guest: 80,  host: 8000, auto_correct: true
-    control.vm.network :forwarded_port, guest: 443, host: 8443, auto_correct: true
-    control.vm.network :forwarded_port, guest: 8080,  host: 8080, auto_correct: true
-    control.vm.network :forwarded_port, guest: 5000,  host: 8050, auto_correct: true
+#    control.vm.network :forwarded_port, guest: 80,  host: 8000, auto_correct: true
+#    control.vm.network :forwarded_port, guest: 443, host: 8443, auto_correct: true
+#    control.vm.network :forwarded_port, guest: 8080,  host: 8080, auto_correct: true
+#    control.vm.network :forwarded_port, guest: 5000,  host: 8050, auto_correct: true
     
     control.vm.hostname = "control.dev"
 
