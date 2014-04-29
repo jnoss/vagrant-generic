@@ -5,8 +5,8 @@
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "puppetlabs/centos-6.5-64-puppet"
-#  config.vm.box = "puppetlabs/centos-65-x64-openstack"
+#  config.vm.box = "puppetlabs/centos-6.5-64-puppet"
+  config.vm.box = "puppetlabs/centos-65-x64-openstack"
 
   config.hostmanager.enabled = true
   config.hostmanager.manage_host = false
@@ -29,6 +29,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     puppet.vm.provider :virtualbox do |virtualbox, override|
       virtualbox.customize ['modifyvm', :id, '--memory', '1024']
     end
+    
     puppet.vm.provider "vmware_fusion" do |v|
         v.vmx["memsize"] =  "1024"
     end
@@ -50,7 +51,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     control.vm.provider  :virtualbox do |virtualbox, override|
       virtualbox.customize ['modifyvm', :id, '--memory', '1024']
     end
-    puppet.vm.provider "vmware_fusion" do |v|
+    control.vm.provider "vmware_fusion" do |v|
         v.vmx["memsize"] =  "1024"
     end
   end
@@ -66,7 +67,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     swiftstore1.vm.provider  :virtualbox do |virtualbox, override|
       virtualbox.customize ['modifyvm', :id, '--memory', '1024']
     end
-    puppet.vm.provider "vmware_fusion" do |v|
+    swiftstore1.vm.provider "vmware_fusion" do |v|
         v.vmx["memsize"] =  "1024"
     end
   end
@@ -82,7 +83,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     swiftstore2.vm.provider  :virtualbox do |virtualbox, override|
       virtualbox.customize ['modifyvm', :id, '--memory', '1024']
     end
-    puppet.vm.provider "vmware_fusion" do |v|
+    swiftstore2.vm.provider "vmware_fusion" do |v|
         v.vmx["memsize"] =  "1024"
     end
   end
@@ -98,7 +99,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     swiftstore3.vm.provider  :virtualbox do |virtualbox, override|
       virtualbox.customize ['modifyvm', :id, '--memory', '1024']
     end
-    puppet.vm.provider "vmware_fusion" do |v|
+    swiftstore3.vm.provider "vmware_fusion" do |v|
         v.vmx["memsize"] =  "1024"
     end
   end
@@ -114,7 +115,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     access.vm.provider  :virtualbox do |virtualbox, override|
       virtualbox.customize ['modifyvm', :id, '--memory', '768']
     end
-    puppet.vm.provider "vmware_fusion" do |v|
+    access.vm.provider "vmware_fusion" do |v|
         v.vmx["memsize"] =  "768"
     end
   end
