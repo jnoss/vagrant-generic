@@ -53,6 +53,7 @@ node /access/ {
   #Install nmap etc
   package { 'nmap':        ensure => installed }
   package { 'telnet':        ensure => installed }
+  package { 'xterm':    ensure => installed }
   package { 'firefox':    ensure => installed }
 
   # Declare the Harvard class for a Harvard look and feel
